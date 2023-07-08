@@ -11,31 +11,28 @@ import {
   View,
 } from 'react-native';
 import { getWorkouts } from './workouts';
-import { Workout } from './types';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { WorkoutsScreen } from "./WorkoutsScreen"
+
+const Stack = createNativeStackNavigator();
 
 const App = (): JSX.Element => {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const isDarkMode = useColorScheme() === 'dark';
 
-  useEffect(() => {
-    getWorkouts().then((data) => setWorkouts(data)).catch((exception) => console.error(exception));
-  }, [])
-
   return (
-    <SafeAreaView >
+    <NavigationContainer>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-      />{workouts.length == 0 ?
-        <View>
-          <Text>No saved workouts</Text>
-          <Button title='Add workout'></Button>
-        </View> :
-        <FlatList
-          data={workouts}
-          renderItem={({ item }) => <View><Text>{item.name}</Text></View>}
-          keyExtractor={(_, index) => index.toString()}>
-        </FlatList>}
-    </SafeAreaView>
+      />
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Workouts"
+          component={WorkoutsScreen}
+          options={{ title: 'Welcome' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
