@@ -13,3 +13,7 @@ export interface Move {
   name: string;
   description: string;
 }
+
+export interface AppContext {
+  workouts: Workout[];
+}
