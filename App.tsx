@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useInsertionEffect,
+  useReducer,
   useState,
 } from 'react';
 import {
@@ -22,7 +23,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {WorkoutsScreen} from './WorkoutsScreen';
 import {AddWorkoutScreen} from './AddWorkoutScreen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {AppContext, Workout} from './types';
+import {Workout, WorkoutState} from './types';
+import {WorkoutStore} from './WorkoutStore';
 
 export type RootStackParamList = {
   Workouts: undefined;
@@ -31,22 +33,19 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const App = (): JSX.Element => {
+const WorkoutScreen = (): JSX.Element => {
   const isDarkMode = useColorScheme() === 'dark';
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-  useEffect(() => {
-    getWorkouts()
-      .then(data => setWorkouts(data))
-      .catch(exception => console.error(exception));
-  }, []);
-  const AppContext = createContext<AppContext>({workouts: workouts});
+  // const addNewWorkout = (workout: Workout) => {
+  //   const newWorkouts = [...workouts, workout];
+  //   setWorkouts(newWorkouts);
+  // };
 
   return (
     <NavigationContainer>
-      <GestureHandlerRootView style={{flex: 1}}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <AppContext.Provider value={{workouts: workouts}}>
+      <WorkoutStore>
+        <GestureHandlerRootView style={{flex: 1}}>
+          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
           <Stack.Navigator>
             <Stack.Screen
               name="Workouts"
@@ -59,10 +58,10 @@ const App = (): JSX.Element => {
               options={{title: 'Add workout'}}
             />
           </Stack.Navigator>
-        </AppContext.Provider>
-      </GestureHandlerRootView>
+        </GestureHandlerRootView>
+      </WorkoutStore>
     </NavigationContainer>
   );
 };
 
-export default App;
+export default WorkoutScreen;

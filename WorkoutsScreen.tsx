@@ -1,22 +1,30 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Button, FlatList, Text, View} from 'react-native';
 import {Workout} from './types';
 import {getWorkouts} from './workouts';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
 import {TextInput} from 'react-native-gesture-handler';
+import {Context} from './WorkoutStore';
 
 export const WorkoutsScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  // const workouts = useMemo(
+  //   () => workoutState.workouts,
+  //   [workoutState.workouts],
+  // );
 
-  useEffect(() => {
-    getWorkouts()
-      .then(data => setWorkouts(data))
-      .catch(exception => console.error(exception));
-  }, []);
+  // useEffect(() => {
+  //   getWorkouts()
+  //     .then(data => dispatchWorkouts({type: 'setWorkouts', payload: data}))
+  //     .catch(exception => console.error(exception));
+  // }, []);
+
+  const {state} = useContext(Context);
+
+  const workouts = useMemo(() => state.workouts, [state]);
 
   return (
     <View>

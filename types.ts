@@ -14,6 +14,6 @@ export interface Move {
   description: string;
 }
 
-export interface AppContext {
+export interface WorkoutState {
   workouts: Workout[];
 }
