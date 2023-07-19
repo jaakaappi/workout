@@ -1,6 +1,7 @@
 export interface Workout {
   name: string;
-  description: string;
+  notes: string;
+  moves: WorkoutMove[];
 }
 
 export interface WorkoutMove {
@@ -11,7 +12,7 @@ export interface WorkoutMove {
 
 export interface Move {
   name: string;
-  description: string;
+  notes: string;
 }
 
 export interface WorkoutState {

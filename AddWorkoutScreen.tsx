@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
-import {WorkoutMove} from './types';
+import {Workout, WorkoutMove} from './types';
 import {useFocusEffect} from '@react-navigation/native';
 import {Context} from './WorkoutStore';
 
@@ -25,6 +25,11 @@ export const AddWorkoutScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
+  const [currentWorkout, setCurrentWorkout] = useState<Workout>({
+    name: '',
+    notes: '',
+    moves: [],
+  });
   const [moves, setMoves] = useState<WorkoutMove[]>([]);
 
   // useFocusEffect(
@@ -45,40 +50,52 @@ export const AddWorkoutScreen = ({
   const {dispatch} = useContext(Context);
 
   const handleAddMovePressed = () => {
-    setMoves([
-      ...moves,
-      {move: {name: '', description: ''}, repetitions: 1, series: 1},
-    ]);
+    const newMoves = [
+      ...currentWorkout.moves,
+      {move: {name: '', notes: ''}, repetitions: 1, series: 1},
+    ];
+    setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
   const handleMoveSeriesChanged = (newValue: string, moveIndex: number) => {
-    const oldMove = moves[moveIndex];
-    setMoves([
-      ...moves.slice(0, moveIndex),
+    const oldMove = currentWorkout.moves[moveIndex];
+    const newMoves = [
+      ...currentWorkout.moves.slice(0, moveIndex),
       {...oldMove, series: Math.floor(parseFloat(newValue) || 1)},
-      ...moves.slice(moveIndex + 1),
-    ]);
+      ...currentWorkout.moves.slice(moveIndex + 1),
+    ];
+    setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
   const handleMoveRepetitionsChanged = (
     newValue: string,
     moveIndex: number,
   ) => {
-    const oldMove = moves[moveIndex];
-    setMoves([
-      ...moves.slice(0, moveIndex),
+    const oldMove = currentWorkout.moves[moveIndex];
+    const newMoves = [
+      ...currentWorkout.moves.slice(0, moveIndex),
       {...oldMove, repetitions: Math.floor(parseFloat(newValue) || 1)},
-      ...moves.slice(moveIndex + 1),
-    ]);
+      ...currentWorkout.moves.slice(moveIndex + 1),
+    ];
+    setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
   const handleMoveNameChanged = (newValue: string, moveIndex: number) => {
-    const oldMove = moves[moveIndex];
-    setMoves([
-      ...moves.slice(0, moveIndex),
+    const oldMove = currentWorkout.moves[moveIndex];
+    const newMoves = [
+      ...currentWorkout.moves.slice(0, moveIndex),
       {...oldMove, move: {...oldMove.move, name: newValue}},
-      ...moves.slice(moveIndex + 1),
-    ]);
+      ...currentWorkout.moves.slice(moveIndex + 1),
+    ];
+    setCurrentWorkout({...currentWorkout, moves: newMoves});
+  };
+
+  const handleWorkoutNameChanged = (name: string) => {
+    setCurrentWorkout({...currentWorkout, name: name});
+  };
+
+  const handleWorkoutNotesChanged = (notes: string) => {
+    setCurrentWorkout({...currentWorkout, notes: notes});
   };
 
   const handleUnsavedChangesOnNavigation = () => {
@@ -97,7 +114,10 @@ export const AddWorkoutScreen = ({
   };
 
   const handleSavePressed = () => {
-    dispatch({type: 'addWorkout', payload: [{name: 'asd', description: ''}]});
+    dispatch({
+      type: 'addWorkout',
+      payload: [currentWorkout],
+    });
     navigation.navigate('Workouts');
   };
 
@@ -114,14 +134,24 @@ export const AddWorkoutScreen = ({
 
   return (
     <View>
-      <TextInput>Name</TextInput>
-      <TextInput multiline>Description</TextInput>
-      {moves.length > 0 && (
+      <TextInput
+        style={styles.textField}
+        value={currentWorkout.name}
+        placeholder="Name"
+        onChangeText={text => handleWorkoutNameChanged(text)}
+      />
+      <TextInput
+        style={styles.textField}
+        value={currentWorkout.notes}
+        placeholder="Notes"
+        onChangeText={text => handleWorkoutNotesChanged(text)}
+      />
+      {currentWorkout.moves.length > 0 && (
         <View>
           <Text>Moves</Text>
           <Text>Series x reps, move name</Text>
           <FlatList
-            data={moves}
+            data={currentWorkout.moves}
             style={{display: 'flex'}}
             renderItem={({item: move, index: moveIndex}) => (
               <View style={{flexDirection: 'row', padding: 8, gap: 8}}>

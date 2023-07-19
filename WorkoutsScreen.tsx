@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {Button, FlatList, Text, View} from 'react-native';
+import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
 import {Workout} from './types';
 import {getWorkouts} from './workouts';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -16,15 +16,21 @@ export const WorkoutsScreen = ({
   //   [workoutState.workouts],
   // );
 
-  // useEffect(() => {
-  //   getWorkouts()
-  //     .then(data => dispatchWorkouts({type: 'setWorkouts', payload: data}))
-  //     .catch(exception => console.error(exception));
-  // }, []);
-
-  const {state} = useContext(Context);
+  const {state, dispatch} = useContext(Context);
 
   const workouts = useMemo(() => state.workouts, [state]);
+
+  const handleDeleteWorkoutPressed = (workoutIndex: number) => {
+    dispatch({type: 'deleteWorkout', payload: workoutIndex});
+  };
+
+  const styles = StyleSheet.create({
+    workoutRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      padding: 6,
+    },
+  });
 
   return (
     <View>
@@ -38,9 +44,16 @@ export const WorkoutsScreen = ({
       ) : (
         <FlatList
           data={workouts}
-          renderItem={({item}) => (
-            <View>
-              <Text>{item.name}</Text>
+          renderItem={({item, index}) => (
+            <View style={styles.workoutRow}>
+              <View>
+                <Text>{`${item.name}: ${item.moves.length}`}</Text>
+                <Text>{item.notes}</Text>
+              </View>
+              <Button
+                title="Delete"
+                onPress={() => handleDeleteWorkoutPressed(index)}
+              />
             </View>
           )}
           keyExtractor={(_, index) => index.toString()}
