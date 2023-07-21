@@ -28,9 +28,9 @@ export const AddWorkoutScreen = ({
   const [currentWorkout, setCurrentWorkout] = useState<Workout>({
     name: '',
     notes: '',
+    breaks: 0,
     moves: [],
   });
-  const [moves, setMoves] = useState<WorkoutMove[]>([]);
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -114,14 +114,34 @@ export const AddWorkoutScreen = ({
   };
 
   const handleSavePressed = () => {
-    dispatch({
-      type: 'addWorkout',
-      payload: [currentWorkout],
-    });
-    navigation.navigate('Workouts');
+    if (currentWorkout.name.length <= 0) {
+      Alert.alert(
+        'Missing info',
+        'At least the name of the workout is needed!',
+        [{text: 'Close'}],
+      );
+    } else if (currentWorkout.moves.some(move => move.move.name.length <= 1)) {
+      Alert.alert('Missing info', 'At least one move is missing a name!', [
+        {text: 'Close'},
+      ]);
+    } else {
+      dispatch({
+        type: 'addWorkout',
+        payload: [currentWorkout],
+      });
+      navigation.navigate('Workouts');
+    }
   };
 
   const styles = StyleSheet.create({
+    mainContainer: {
+      padding: 8,
+      gap: 6,
+    },
+    textFieldHeader: {
+      color: 'black',
+      fontWeight: 'bold',
+    },
     textField: {
       flexShrink: 1,
       height: '100%',
@@ -133,22 +153,25 @@ export const AddWorkoutScreen = ({
   });
 
   return (
-    <View>
+    <View style={styles.mainContainer}>
+      <Text style={styles.textFieldHeader}>Name (required)</Text>
       <TextInput
         style={styles.textField}
         value={currentWorkout.name}
         placeholder="Name"
         onChangeText={text => handleWorkoutNameChanged(text)}
       />
+      <Text style={styles.textFieldHeader}>Notes</Text>
       <TextInput
         style={styles.textField}
         value={currentWorkout.notes}
+        multiline
         placeholder="Notes"
         onChangeText={text => handleWorkoutNotesChanged(text)}
       />
+      <Text style={styles.textFieldHeader}>Moves</Text>
       {currentWorkout.moves.length > 0 && (
         <View>
-          <Text>Moves</Text>
           <Text>Series x reps, move name</Text>
           <FlatList
             data={currentWorkout.moves}

@@ -1,6 +1,7 @@
 export interface Workout {
   name: string;
   notes: string;
+  breaks: number;
   moves: WorkoutMove[];
 }
 
