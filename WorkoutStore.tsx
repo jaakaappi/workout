@@ -28,12 +28,25 @@ export const WorkoutStore = ({children}: React.PropsWithChildren) => {
         return {...state, workouts: action.payload as Workout[]};
       }
       case 'addWorkout': {
-        const newWorkouts = [
-          ...state.workouts,
-          ...(action.payload as Workout[]),
-        ];
-        saveWorkouts(newWorkouts);
-        return {...state, workouts: newWorkouts};
+        const existingWorkoutIndex = state.workouts.findIndex(
+          workout => workout.id === action.payload[0].id,
+        );
+        if (existingWorkoutIndex > -1) {
+          const updatedWorkouts = [
+            ...state.workouts.slice(0, existingWorkoutIndex),
+            {...action.payload[0]},
+            ...state.workouts.slice(existingWorkoutIndex + 1),
+          ];
+          saveWorkouts(updatedWorkouts);
+          return {...state, workouts: updatedWorkouts};
+        } else {
+          const newWorkouts = [
+            ...state.workouts,
+            ...(action.payload as Workout[]),
+          ];
+          saveWorkouts(newWorkouts);
+          return {...state, workouts: newWorkouts};
+        }
       }
       case 'deleteWorkout': {
         const newWorkouts = [

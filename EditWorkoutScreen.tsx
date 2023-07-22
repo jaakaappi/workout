@@ -20,17 +20,22 @@ import {RootStackParamList} from './App';
 import {Workout, WorkoutMove} from './types';
 import {useFocusEffect} from '@react-navigation/native';
 import {Context} from './WorkoutStore';
+import uuid from 'react-native-uuid';
 
-export const AddWorkoutScreen = ({
+export const EditWorkoutScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
-  const [currentWorkout, setCurrentWorkout] = useState<Workout>({
-    name: '',
-    notes: '',
-    breaks: 0,
-    moves: [],
-  });
+  const params = route.params as {workout: Workout | undefined} | undefined;
+  const [currentWorkout, setCurrentWorkout] = useState<Workout>(
+    params?.workout ?? {
+      id: uuid.v4().toString(),
+      name: '',
+      notes: '',
+      breaks: 0,
+      moves: [],
+    },
+  );
 
   // useFocusEffect(
   //   useCallback(() => {

@@ -25,7 +25,7 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import {WorkoutsScreen} from './WorkoutsScreen';
-import {AddWorkoutScreen} from './AddWorkoutScreen';
+import {EditWorkoutScreen} from './EditWorkoutScreen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Workout, WorkoutState} from './types';
 import {WorkoutStore} from './WorkoutStore';
@@ -33,7 +33,7 @@ import {WorkoutDetailsScreen} from './WorkoutDetailScreen';
 
 export type RootStackParamList = {
   Workouts: undefined;
-  AddWorkout: undefined;
+  EditWorkout: {workout?: Workout};
   WorkoutDetails: {workout: Workout};
 };
 
@@ -61,9 +61,9 @@ const WorkoutScreen = (): JSX.Element => {
               })}
             />
             <Stack.Screen
-              name="AddWorkout"
-              component={AddWorkoutScreen}
-              options={{title: 'Add workout'}}
+              name="EditWorkout"
+              component={EditWorkoutScreen}
+              options={{title: 'Edit workout'}}
             />
             <Stack.Screen
               name="WorkoutDetails"
@@ -103,7 +103,7 @@ const WorkoutScreenHeader = ({
       <Text style={styles.headerText}>Workouts</Text>
       <Button
         title="Add new"
-        onPress={() => navigation.navigate('AddWorkout')}
+        onPress={() => navigation.navigate('EditWorkout', {workout: undefined})}
       />
     </View>
   );
@@ -145,7 +145,7 @@ const WorkoutDetailsHeader = ({
       <View style={styles.buttonContainer}>
         <Button
           title="Edit"
-          onPress={() => navigation.navigate('AddWorkout')}
+          onPress={() => navigation.navigate('EditWorkout', {workout: workout})}
         />
       </View>
     </View>
