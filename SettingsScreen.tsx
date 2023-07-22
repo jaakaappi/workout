@@ -20,7 +20,6 @@ export const SettingsScreen = () => {
   const handleImportPressed = () => {
     DocumentPicker.pickSingle({
       presentationStyle: 'fullScreen',
-      //   copyTo: 'cachesDirectory',
     })
       .then(response => {
         RNFS.readFile(response.uri).then(value => {
@@ -35,7 +34,9 @@ export const SettingsScreen = () => {
           }
         });
       })
-      .catch(() => {});
+      .catch(error => {
+        console.error(`Failed to open file: ${error}`);
+      });
   };
 
   const handleExportPressed = () => {
