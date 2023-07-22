@@ -38,6 +38,10 @@ export const WorkoutsScreen = ({
       padding: 6,
       backgroundColor: '#ffffff',
     },
+    workoutRowHeaderContainer: {
+      flexGrow: 0,
+      flexShrink: 1,
+    },
     workoutRowHeader: {
       fontWeight: 'bold',
       color: 'black',
@@ -45,6 +49,7 @@ export const WorkoutsScreen = ({
     workoutRowButtonContainer: {
       flexDirection: 'row',
       gap: 6,
+      alignSelf: 'center',
     },
   });
 
@@ -57,18 +62,24 @@ export const WorkoutsScreen = ({
       ) : (
         <FlatList
           data={workouts}
+          style={{width: '100%'}}
           renderItem={({item, index}) => (
-            <Pressable onPress={() => navigation.navigate('WorkoutDetails')}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate('WorkoutDetails', {
+                  workout: item,
+                })
+              }>
               <View style={styles.workoutRow}>
-                <View>
-                  <Text
-                    style={
-                      styles.workoutRowHeader
-                    }>{`${item.name}: ${item.moves.length} moves`}</Text>
+                <View style={styles.workoutRowHeaderContainer}>
+                  <Text style={styles.workoutRowHeader}>{item.name}</Text>
+                  <Text>{`${item.moves.length} moves - ${
+                    item.breaks ? `${item.breaks}s breaks` : 'No breaks'
+                  }`}</Text>
                   <Text
                     numberOfLines={1}
                     ellipsizeMode="head">
-                    {item.notes}
+                    {item.notes || 'No notes'}
                   </Text>
                 </View>
                 <View style={styles.workoutRowButtonContainer}>

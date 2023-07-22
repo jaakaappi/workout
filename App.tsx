@@ -34,7 +34,7 @@ import {WorkoutDetailsScreen} from './WorkoutDetailScreen';
 export type RootStackParamList = {
   Workouts: undefined;
   AddWorkout: undefined;
-  WorkoutDetails: undefined;
+  WorkoutDetails: {workout: Workout};
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,6 +68,9 @@ const WorkoutScreen = (): JSX.Element => {
             <Stack.Screen
               name="WorkoutDetails"
               component={WorkoutDetailsScreen}
+              options={props => ({
+                headerTitle: () => <WorkoutDetailsHeader {...props} />,
+              })}
             />
           </Stack.Navigator>
         </GestureHandlerRootView>
@@ -102,6 +105,49 @@ const WorkoutScreenHeader = ({
         title="Add new"
         onPress={() => navigation.navigate('AddWorkout')}
       />
+    </View>
+  );
+};
+
+const WorkoutDetailsHeader = ({
+  route,
+  navigation,
+}: NativeStackScreenProps<RootStackParamList>) => {
+  const {workout} = route.params! as {workout: Workout};
+
+  const styles = StyleSheet.create({
+    mainContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      margin: 0,
+      padding: 0,
+      gap: 8,
+      width: '90%',
+    },
+    headerText: {
+      color: 'black',
+      fontSize: 20,
+      textAlign: 'left',
+    },
+    buttonContainer: {
+      justifyContent: 'center',
+    },
+  });
+
+  return (
+    <View style={styles.mainContainer}>
+      <Text style={styles.headerText}>
+        {workout.name.length > 20
+          ? workout.name.slice(0, 20) + '...'
+          : workout.name}
+      </Text>
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Edit"
+          onPress={() => navigation.navigate('AddWorkout')}
+        />
+      </View>
     </View>
   );
 };
