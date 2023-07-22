@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {
   Button,
   FlatList,
@@ -7,22 +7,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Workout} from './types';
-import {getWorkouts} from './workouts';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
-import {TextInput, TouchableHighlight} from 'react-native-gesture-handler';
 import {Context} from './WorkoutStore';
 
 export const WorkoutsScreen = ({
-  route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
-  // const workouts = useMemo(
-  //   () => workoutState.workouts,
-  //   [workoutState.workouts],
-  // );
-
   const {state, dispatch} = useContext(Context);
 
   const workouts = useMemo(() => state.workouts, [state]);
@@ -51,12 +42,17 @@ export const WorkoutsScreen = ({
       gap: 6,
       alignSelf: 'center',
     },
+    settingsButton: {
+      alignContent: 'center',
+      alignSelf: 'flex-end',
+      width: '100%',
+    },
   });
 
   return (
-    <View>
+    <View style={{height: '100%'}}>
       {workouts.length == 0 ? (
-        <View>
+        <View style={{flex: 1, padding: 8, alignItems: 'center'}}>
           <Text>No saved workouts</Text>
         </View>
       ) : (
@@ -86,6 +82,7 @@ export const WorkoutsScreen = ({
                   <Button title="Edit" />
                   <Button
                     title="Delete"
+                    color="#DD0000"
                     onPress={() => handleDeleteWorkoutPressed(index)}
                   />
                 </View>
@@ -95,6 +92,12 @@ export const WorkoutsScreen = ({
           keyExtractor={(_, index) => index.toString()}
         />
       )}
+      <View style={styles.settingsButton}>
+        <Button
+          title="Settings"
+          onPress={() => navigation.navigate('Settings')}
+        />
+      </View>
     </View>
   );
 };

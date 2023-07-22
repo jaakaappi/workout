@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Children, createContext, useReducer} from 'react';
+import {createContext, useReducer} from 'react';
 import {Workout, WorkoutState} from './types';
 import {getWorkouts, saveWorkouts} from './workouts';
 
@@ -55,6 +55,10 @@ export const WorkoutStore = ({children}: React.PropsWithChildren) => {
         ];
         saveWorkouts(newWorkouts);
         return {...state, workouts: newWorkouts};
+      }
+      case 'deleteAllWorkouts': {
+        saveWorkouts([]);
+        return {...state, workouts: []};
       }
       default:
         throw Error('Unknown action.');

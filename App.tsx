@@ -1,81 +1,76 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useInsertionEffect,
-  useReducer,
-  useState,
-} from 'react';
+import 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import React from 'react';
 import {
   Button,
-  FlatList,
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
   View,
 } from 'react-native';
-import {getWorkouts} from './workouts';
 import {NavigationContainer} from '@react-navigation/native';
 import {
-  NativeStackNavigationProp,
   NativeStackScreenProps,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import {WorkoutsScreen} from './WorkoutsScreen';
 import {EditWorkoutScreen} from './EditWorkoutScreen';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {Workout, WorkoutState} from './types';
+import {Workout} from './types';
 import {WorkoutStore} from './WorkoutStore';
 import {WorkoutDetailsScreen} from './WorkoutDetailScreen';
+import {SettingsScreen} from './SettingsScreen';
 
 export type RootStackParamList = {
   Workouts: undefined;
   EditWorkout: {workout?: Workout};
   WorkoutDetails: {workout: Workout};
+  Settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 const WorkoutScreen = (): JSX.Element => {
   const isDarkMode = useColorScheme() === 'dark';
-
-  // const addNewWorkout = (workout: Workout) => {
-  //   const newWorkouts = [...workouts, workout];
-  //   setWorkouts(newWorkouts);
-  // };
 
   return (
     <NavigationContainer>
       <WorkoutStore>
         <GestureHandlerRootView style={{flex: 1}}>
           <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Workouts"
-              component={WorkoutsScreen}
-              options={props => ({
-                headerTitle: () => <WorkoutScreenHeader {...props} />,
-              })}
-            />
-            <Stack.Screen
-              name="EditWorkout"
-              component={EditWorkoutScreen}
-              options={{title: 'Edit workout'}}
-            />
-            <Stack.Screen
-              name="WorkoutDetails"
-              component={WorkoutDetailsScreen}
-              options={props => ({
-                headerTitle: () => <WorkoutDetailsHeader {...props} />,
-              })}
-            />
-          </Stack.Navigator>
+          <WorkoutStack />
         </GestureHandlerRootView>
       </WorkoutStore>
     </NavigationContainer>
+  );
+};
+
+const WorkoutStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Workouts"
+        component={WorkoutsScreen}
+        options={props => ({
+          headerTitle: () => <WorkoutScreenHeader {...props} />,
+        })}
+      />
+      <Stack.Screen
+        name="EditWorkout"
+        component={EditWorkoutScreen}
+        options={{title: 'Edit workout'}}
+      />
+      <Stack.Screen
+        name="WorkoutDetails"
+        component={WorkoutDetailsScreen}
+        options={props => ({
+          headerTitle: () => <WorkoutDetailsHeader {...props} />,
+        })}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+      />
+    </Stack.Navigator>
   );
 };
 
@@ -103,6 +98,7 @@ const WorkoutScreenHeader = ({
       <Text style={styles.headerText}>Workouts</Text>
       <Button
         title="Add new"
+        color="green"
         onPress={() => navigation.navigate('EditWorkout', {workout: undefined})}
       />
     </View>
