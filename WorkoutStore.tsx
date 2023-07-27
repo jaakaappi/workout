@@ -7,7 +7,7 @@ type WorkoutContext = {
   state: WorkoutState;
   dispatch: React.Dispatch<{
     type: string;
-    payload: Workout[] | number;
+    payload: Workout[] | number | string;
   }>;
 };
 
@@ -21,7 +21,7 @@ export const Context = createContext(initialState);
 export const WorkoutStore = ({children}: React.PropsWithChildren) => {
   const workoutReducer = (
     state: WorkoutState,
-    action: {type: string; payload: Workout[] | number},
+    action: {type: string; payload: Workout[] | number | string},
   ): WorkoutState => {
     switch (action.type) {
       case 'setWorkouts': {
@@ -49,9 +49,12 @@ export const WorkoutStore = ({children}: React.PropsWithChildren) => {
         }
       }
       case 'deleteWorkout': {
+        const workoutIndex = state.workouts.findIndex(
+          workout => workout.id === (action.payload as string),
+        );
         const newWorkouts = [
-          ...state.workouts.slice(0, action.payload as number),
-          ...state.workouts.slice((action.payload as number) + 1),
+          ...state.workouts.slice(0, workoutIndex),
+          ...state.workouts.slice(workoutIndex + 1),
         ];
         saveWorkouts(newWorkouts);
         return {...state, workouts: newWorkouts};

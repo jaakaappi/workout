@@ -1,14 +1,22 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
 import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {Workout} from './types';
+import {Context} from './WorkoutStore';
 
 export const WorkoutDetailsScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
   const {workout} = route.params as {workout: Workout};
+  const {dispatch} = useContext(Context);
+
+  const handleDeleteWorkoutPressed = (workout: Workout) => {
+    dispatch({type: 'deleteWorkout', payload: workout.id});
+    navigation.navigate('Workouts');
+  };
+
   const styles = StyleSheet.create({
     mainContainer: {
       padding: 8,
@@ -34,6 +42,11 @@ export const WorkoutDetailsScreen = ({
     moveCountCell: {
       justifyContent: 'center',
     },
+    deleteButton: {
+      alignContent: 'center',
+      alignSelf: 'flex-end',
+      width: '100%',
+    },
   });
 
   return (
@@ -55,10 +68,8 @@ export const WorkoutDetailsScreen = ({
                 </View>
                 <View>
                   <Text>{move.move.name}</Text>
-                  <Text>{move.move.notes}</Text>
-                  <Text>
-                    {move.move.notes.length > 0 ? move.move.notes : 'No notes'}
-                  </Text>
+                  <Text>{move.notes}</Text>
+                  <Text>{move.notes.length > 0 ? move.notes : 'No notes'}</Text>
                 </View>
               </View>
             )}
@@ -67,6 +78,13 @@ export const WorkoutDetailsScreen = ({
       ) : (
         <Text>No moves</Text>
       )}
+      <View style={styles.deleteButton}>
+        <Button
+          title="Delete workout"
+          color="red"
+          onPress={() => handleDeleteWorkoutPressed(workout)}
+        />
+      </View>
     </View>
   );
 };

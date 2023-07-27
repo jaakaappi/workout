@@ -10,6 +10,7 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
 import {Context} from './WorkoutStore';
+import {IconButton} from './IconButton';
 
 export const WorkoutsScreen = ({
   navigation,
@@ -79,9 +80,13 @@ export const WorkoutsScreen = ({
                   </Text>
                 </View>
                 <View style={styles.workoutRowButtonContainer}>
-                  <Button title="Edit" />
                   <Button
-                    title="Delete"
+                    title="Edit"
+                    onPress={() =>
+                      navigation.navigate('EditWorkout', {workout: item})
+                    }
+                  />
+                  <IconButton
                     color="#DD0000"
                     onPress={() => handleDeleteWorkoutPressed(index)}
                   />

@@ -4,19 +4,21 @@ export interface Workout {
   id: string;
   name: string;
   notes: string;
-  breaks: number;
+  breaks: string;
   moves: WorkoutMove[];
 }
 
 export interface WorkoutMove {
   move: Move;
-  repetitions: number;
-  series: number;
+  repetitions: string;
+  series: string;
+  weight: string;
+  notes: string;
 }
 
 export interface Move {
   name: string;
-  notes: string;
+  maximumWeight: string;
 }
 
 export interface WorkoutState {

@@ -1,13 +1,6 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Alert,
-  BackHandler,
   Button,
   FlatList,
   StyleSheet,
@@ -16,11 +9,12 @@ import {
   View,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from './App';
-import {Workout, WorkoutMove} from './types';
-import {useFocusEffect} from '@react-navigation/native';
-import {Context} from './WorkoutStore';
 import uuid from 'react-native-uuid';
+
+import {RootStackParamList} from './App';
+import {Workout} from './types';
+import {Context} from './WorkoutStore';
+import {IconButton} from './IconButton';
 
 export const EditWorkoutScreen = ({
   route,
@@ -32,7 +26,7 @@ export const EditWorkoutScreen = ({
       id: uuid.v4().toString(),
       name: '',
       notes: '',
-      breaks: 0,
+      breaks: '',
       moves: [],
     },
   );
@@ -57,16 +51,33 @@ export const EditWorkoutScreen = ({
   const handleAddMovePressed = () => {
     const newMoves = [
       ...currentWorkout.moves,
-      {move: {name: '', notes: ''}, repetitions: 1, series: 1},
+      {
+        move: {name: '', maximumWeight: ''},
+        repetitions: '',
+        series: '',
+        notes: '',
+        weight: '',
+      },
     ];
     setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
   const handleMoveSeriesChanged = (newValue: string, moveIndex: number) => {
+    const cleanedValue = newValue
+      .replace(/[^0-9]/g, '')
+      .split(',')[0]
+      .split('.')[0];
+
     const oldMove = currentWorkout.moves[moveIndex];
     const newMoves = [
       ...currentWorkout.moves.slice(0, moveIndex),
-      {...oldMove, series: Math.floor(parseFloat(newValue) || 1)},
+      {
+        ...oldMove,
+        series:
+          cleanedValue != ''
+            ? Math.floor(parseFloat(cleanedValue)).toString()
+            : '',
+      },
       ...currentWorkout.moves.slice(moveIndex + 1),
     ];
     setCurrentWorkout({...currentWorkout, moves: newMoves});
@@ -76,10 +87,21 @@ export const EditWorkoutScreen = ({
     newValue: string,
     moveIndex: number,
   ) => {
+    const cleanedValue = newValue
+      .replace(/[^0-9]/g, '')
+      .split(',')[0]
+      .split('.')[0];
+
     const oldMove = currentWorkout.moves[moveIndex];
     const newMoves = [
       ...currentWorkout.moves.slice(0, moveIndex),
-      {...oldMove, repetitions: Math.floor(parseFloat(newValue) || 1)},
+      {
+        ...oldMove,
+        repetitions:
+          cleanedValue != ''
+            ? Math.floor(parseFloat(cleanedValue)).toString()
+            : '',
+      },
       ...currentWorkout.moves.slice(moveIndex + 1),
     ];
     setCurrentWorkout({...currentWorkout, moves: newMoves});
@@ -92,6 +114,28 @@ export const EditWorkoutScreen = ({
       {...oldMove, move: {...oldMove.move, name: newValue}},
       ...currentWorkout.moves.slice(moveIndex + 1),
     ];
+    setCurrentWorkout({...currentWorkout, moves: newMoves});
+  };
+
+  const handleMoveWeightChanged = (newValue: string, moveIndex: number) => {
+    const cleanedValue = newValue
+      .replace(/[^0-9]/g, '')
+      .split(',')[0]
+      .split('.')[0];
+
+    const oldMove = currentWorkout.moves[moveIndex];
+    const newMoves = [
+      ...currentWorkout.moves.slice(0, moveIndex),
+      {
+        ...oldMove,
+        weight:
+          cleanedValue != ''
+            ? Math.floor(parseFloat(cleanedValue)).toString()
+            : '',
+      },
+      ...currentWorkout.moves.slice(moveIndex + 1),
+    ];
+
     setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
@@ -119,16 +163,18 @@ export const EditWorkoutScreen = ({
   };
 
   const handleSavePressed = () => {
-    if (currentWorkout.name.length <= 0) {
+    if (
+      currentWorkout.name.length <= 0 ||
+      currentWorkout.moves.some(
+        move =>
+          move.series === '' || move.repetitions === '' || move.weight === '',
+      )
+    ) {
       Alert.alert(
         'Missing info',
-        'At least the name of the workout is needed!',
+        'Workout name or some move name or number is missing!',
         [{text: 'Close'}],
       );
-    } else if (currentWorkout.moves.some(move => move.move.name.length <= 1)) {
-      Alert.alert('Missing info', 'At least one move is missing a name!', [
-        {text: 'Close'},
-      ]);
     } else {
       dispatch({
         type: 'addWorkout',
@@ -136,6 +182,14 @@ export const EditWorkoutScreen = ({
       });
       navigation.navigate('Workouts');
     }
+  };
+
+  const handleRemoveMovePressed = (moveIndex: number) => {
+    const newMoves = [
+      ...currentWorkout.moves.slice(0, moveIndex),
+      ...currentWorkout.moves.slice(moveIndex + 1),
+    ];
+    setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
   const styles = StyleSheet.create({
@@ -177,12 +231,12 @@ export const EditWorkoutScreen = ({
       <Text style={styles.textFieldHeader}>Moves</Text>
       {currentWorkout.moves.length > 0 && (
         <View>
-          <Text>Series x reps, move name</Text>
+          <Text>Series x reps, move name, weight</Text>
           <FlatList
             data={currentWorkout.moves}
             style={{display: 'flex'}}
             renderItem={({item: move, index: moveIndex}) => (
-              <View style={{flexDirection: 'row', padding: 8, gap: 8}}>
+              <View style={{flexDirection: 'row', padding: 6, gap: 6}}>
                 <TextInput
                   style={styles.textField}
                   keyboardType="number-pad"
@@ -222,6 +276,30 @@ export const EditWorkoutScreen = ({
                   placeholder="Name"
                   value={move.move.name}
                   onChangeText={text => handleMoveNameChanged(text, moveIndex)}
+                />
+                <TextInput
+                  style={styles.textField}
+                  keyboardType="number-pad"
+                  clearTextOnFocus
+                  maxLength={3}
+                  placeholder="Weight"
+                  value={move.weight.toString()}
+                  onChangeText={text =>
+                    handleMoveWeightChanged(text, moveIndex)
+                  }
+                />
+                <Text
+                  style={{
+                    flexShrink: 1,
+                    height: '100%',
+                    textAlign: 'center',
+                    verticalAlign: 'middle',
+                    padding: 0,
+                  }}>
+                  kg
+                </Text>
+                <IconButton
+                  onPress={() => handleRemoveMovePressed(moveIndex)}
                 />
               </View>
             )}
