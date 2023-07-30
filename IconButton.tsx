@@ -11,10 +11,11 @@ export const IconButton = ({onPress, color}: IconButtonProps) => {
   const styles = StyleSheet.create({
     mainContainer: {
       padding: 8,
-      gap: 6,
       backgroundColor: color ?? '#2296F3',
       borderRadius: 2,
-      textAlign: 'center',
+      verticalAlign: 'middle',
+      flexDirection: 'column',
+      justifyContent: 'center',
     },
   });
 

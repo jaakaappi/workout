@@ -70,9 +70,7 @@ export const WorkoutsScreen = ({
               <View style={styles.workoutRow}>
                 <View style={styles.workoutRowHeaderContainer}>
                   <Text style={styles.workoutRowHeader}>{item.name}</Text>
-                  <Text>{`${item.moves.length} moves - ${
-                    item.breaks ? `${item.breaks}s breaks` : 'No breaks'
-                  }`}</Text>
+                  <Text>{`${item.moves.length} moves`}</Text>
                   <Text
                     numberOfLines={1}
                     ellipsizeMode="head">
@@ -85,10 +83,6 @@ export const WorkoutsScreen = ({
                     onPress={() =>
                       navigation.navigate('EditWorkout', {workout: item})
                     }
-                  />
-                  <IconButton
-                    color="#DD0000"
-                    onPress={() => handleDeleteWorkoutPressed(index)}
                   />
                 </View>
               </View>

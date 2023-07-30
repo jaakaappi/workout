@@ -127,6 +127,8 @@ const WorkoutDetailsHeader = ({
       textAlign: 'left',
     },
     buttonContainer: {
+      flexDirection: 'row',
+      gap: 6,
       justifyContent: 'center',
     },
   });
@@ -139,6 +141,11 @@ const WorkoutDetailsHeader = ({
           : workout.name}
       </Text>
       <View style={styles.buttonContainer}>
+        <Button
+          title="Start workout"
+          color="green"
+          disabled
+        />
         <Button
           title="Edit"
           onPress={() => navigation.navigate('EditWorkout', {workout: workout})}

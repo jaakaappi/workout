@@ -4,23 +4,19 @@ import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
 import React, {useContext} from 'react';
 import {Workout} from './types';
 import {Context} from './WorkoutStore';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export const WorkoutDetailsScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
   const {workout} = route.params as {workout: Workout};
-  const {dispatch} = useContext(Context);
-
-  const handleDeleteWorkoutPressed = (workout: Workout) => {
-    dispatch({type: 'deleteWorkout', payload: workout.id});
-    navigation.navigate('Workouts');
-  };
 
   const styles = StyleSheet.create({
     mainContainer: {
       padding: 8,
       gap: 6,
+      color: 'black',
     },
     textFieldHeader: {
       color: 'black',
@@ -38,38 +34,73 @@ export const WorkoutDetailsScreen = ({
       flexDirection: 'row',
       padding: 8,
       gap: 8,
+      borderWidth: 1,
+      borderColor: 'grey',
     },
     moveCountCell: {
       justifyContent: 'center',
+    },
+    moveTextCell: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      flex: 1,
     },
     deleteButton: {
       alignContent: 'center',
       alignSelf: 'flex-end',
       width: '100%',
     },
+    weightCell: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    iconContainer: {
+      verticalAlign: 'middle',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    },
+    blackText: {
+      color: 'black',
+    },
   });
 
   return (
     <View style={styles.mainContainer}>
-      <Text>Notes</Text>
-      <Text>{workout.notes.length > 0 ? workout.notes : 'No notes'}</Text>
-      <Text>Breaks</Text>
-      <Text>{workout.breaks}</Text>
+      <Text style={styles.textFieldHeader}>Notes</Text>
+      <Text>{workout.notes.length > 0 ? workout.notes : '-'}</Text>
+      <Text style={styles.textFieldHeader}>Breaks</Text>
+      <Text>{workout.breaks.length > 0 ? workout.breaks : '-'}</Text>
       {workout.moves.length > 0 ? (
         <>
-          <Text>Moves, series x reps, name</Text>
+          <Text style={styles.textFieldHeader}>Moves</Text>
           <FlatList
             data={workout.moves}
             style={{display: 'flex'}}
+            ItemSeparatorComponent={() => <View style={{height: 6}} />}
             renderItem={({item: move}) => (
               <View style={styles.moveRow}>
                 <View style={styles.moveCountCell}>
-                  <Text>{`${move.series} x ${move.repetitions}`}</Text>
+                  <Text
+                    style={
+                      styles.blackText
+                    }>{`${move.series} x ${move.repetitions}`}</Text>
                 </View>
-                <View>
-                  <Text>{move.move.name}</Text>
-                  <Text>{move.notes}</Text>
-                  <Text>{move.notes.length > 0 ? move.notes : 'No notes'}</Text>
+                <View style={styles.moveTextCell}>
+                  <View>
+                    <Text style={styles.blackText}>{move.move.name}</Text>
+                    {move.notes.length > 0 ?? (
+                      <Text style={styles.blackText}>{move.notes.length}</Text>
+                    )}
+                  </View>
+                  <View style={styles.weightCell}>
+                    <View style={styles.iconContainer}>
+                      <Icon
+                        style={styles.blackText}
+                        name="barbell-outline"
+                      />
+                    </View>
+                    <Text style={styles.blackText}>{`${move.weight}kg`}</Text>
+                  </View>
                 </View>
               </View>
             )}
@@ -78,13 +109,7 @@ export const WorkoutDetailsScreen = ({
       ) : (
         <Text>No moves</Text>
       )}
-      <View style={styles.deleteButton}>
-        <Button
-          title="Delete workout"
-          color="red"
-          onPress={() => handleDeleteWorkoutPressed(workout)}
-        />
-      </View>
+      <View style={styles.deleteButton}></View>
     </View>
   );
 };

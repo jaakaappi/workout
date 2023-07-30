@@ -23,7 +23,7 @@ export const EditWorkoutScreen = ({
   const params = route.params as {workout: Workout | undefined} | undefined;
   const [currentWorkout, setCurrentWorkout] = useState<Workout>(
     params?.workout ?? {
-      id: uuid.v4().toString(),
+      id: '',
       name: '',
       notes: '',
       breaks: '',
@@ -176,10 +176,17 @@ export const EditWorkoutScreen = ({
         [{text: 'Close'}],
       );
     } else {
-      dispatch({
-        type: 'addWorkout',
-        payload: [currentWorkout],
-      });
+      if (currentWorkout.id) {
+        dispatch({
+          type: 'addWorkout',
+          payload: [currentWorkout],
+        });
+      } else {
+        dispatch({
+          type: 'addWorkout',
+          payload: [{...currentWorkout, id: uuid.v4().toString()}],
+        });
+      }
       navigation.navigate('Workouts');
     }
   };
@@ -190,6 +197,27 @@ export const EditWorkoutScreen = ({
       ...currentWorkout.moves.slice(moveIndex + 1),
     ];
     setCurrentWorkout({...currentWorkout, moves: newMoves});
+  };
+
+  const handleDeleteWorkoutPressed = (workout: Workout) => {
+    Alert.alert(
+      'Confirmation',
+      'Are you sure you wont to delete this workout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          style: 'destructive',
+          onPress: () => {
+            dispatch({type: 'deleteWorkout', payload: workout.id});
+            navigation.navigate('Workouts');
+          },
+        },
+      ],
+    );
   };
 
   const styles = StyleSheet.create({
@@ -231,7 +259,10 @@ export const EditWorkoutScreen = ({
       <Text style={styles.textFieldHeader}>Moves</Text>
       {currentWorkout.moves.length > 0 && (
         <View>
-          <Text>Series x reps, move name, weight</Text>
+          <Text>
+            Series x reps, move name, weight{' '}
+            <Text style={{fontWeight: 'bold'}}>(all required)</Text>
+          </Text>
           <FlatList
             data={currentWorkout.moves}
             style={{display: 'flex'}}
@@ -299,6 +330,7 @@ export const EditWorkoutScreen = ({
                   kg
                 </Text>
                 <IconButton
+                  color="#DD0000"
                   onPress={() => handleRemoveMovePressed(moveIndex)}
                 />
               </View>
@@ -313,8 +345,16 @@ export const EditWorkoutScreen = ({
       />
       <Button
         title="Save"
+        color="green"
         onPress={handleSavePressed}
       />
+      {currentWorkout.id && (
+        <Button
+          title="Delete workout"
+          color="#DD0000"
+          onPress={() => handleDeleteWorkoutPressed(currentWorkout)}
+        />
+      )}
     </View>
   );
 };
