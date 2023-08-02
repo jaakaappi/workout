@@ -1,14 +1,7 @@
 import 'react-native-gesture-handler';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import React from 'react';
-import {
-  Button,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {StatusBar, StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {
   NativeStackScreenProps,
@@ -20,6 +13,7 @@ import {Workout} from './types';
 import {WorkoutStore} from './WorkoutStore';
 import {WorkoutDetailsScreen} from './WorkoutDetailScreen';
 import {SettingsScreen} from './SettingsScreen';
+import {IconButton} from './IconButton';
 
 export type RootStackParamList = {
   Workouts: undefined;
@@ -96,9 +90,10 @@ const WorkoutScreenHeader = ({
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.headerText}>Workouts</Text>
-      <Button
-        title="Add new"
+      <IconButton
+        icon="plus"
         color="green"
+        text="New"
         onPress={() => navigation.navigate('EditWorkout', {workout: undefined})}
       />
     </View>
@@ -126,29 +121,47 @@ const WorkoutDetailsHeader = ({
       fontSize: 20,
       textAlign: 'left',
     },
+    textContainer: {
+      maxWidth: '70%',
+      flexWrap: 'nowrap',
+      flexDirection: 'row',
+      flexGrow: 0,
+      flexShrink: 1,
+    },
     buttonContainer: {
+      flex: 1,
       flexDirection: 'row',
       gap: 6,
       justifyContent: 'center',
+    },
+    buttonStyle: {
+      padding: 0,
+      paddingHorizontal: 6,
     },
   });
 
   return (
     <View style={styles.mainContainer}>
-      <Text style={styles.headerText}>
-        {workout.name.length > 20
-          ? workout.name.slice(0, 20) + '...'
-          : workout.name}
-      </Text>
+      <View style={styles.textContainer}>
+        <Text
+          style={styles.headerText}
+          ellipsizeMode="tail"
+          numberOfLines={1}>
+          {workout.name}
+        </Text>
+      </View>
       <View style={styles.buttonContainer}>
-        <Button
-          title="Start workout"
-          color="green"
-          disabled
-        />
-        <Button
-          title="Edit"
+        <IconButton
+          icon="square-edit-outline"
+          variant="plain"
+          style={styles.buttonStyle}
           onPress={() => navigation.navigate('EditWorkout', {workout: workout})}
+        />
+        <IconButton
+          text="Start"
+          color="green"
+          icon="play-outline"
+          onPress={() => {}}
         />
       </View>
     </View>

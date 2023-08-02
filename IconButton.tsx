@@ -1,32 +1,76 @@
 import React from 'react';
-import {Pressable, StyleSheet} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import {Pressable, StyleSheet, Text, View, ViewStyle} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface IconButtonProps {
   onPress: () => void;
   color?: string;
+  variant?: 'filled' | 'outline' | 'plain';
+  icon: string;
+  style?: ViewStyle;
+  text?: string;
 }
 
-export const IconButton = ({onPress, color}: IconButtonProps) => {
+export const IconButton = ({
+  onPress,
+  color,
+  variant = 'filled',
+  icon,
+  style,
+  text,
+}: IconButtonProps) => {
+  const selectedColor = color ?? '#2296F3';
+
   const styles = StyleSheet.create({
     mainContainer: {
-      padding: 8,
-      backgroundColor: color ?? '#2296F3',
-      borderRadius: 2,
       verticalAlign: 'middle',
       flexDirection: 'column',
       justifyContent: 'center',
+    },
+    defaultStyle: {
+      padding: 4,
+      paddingHorizontal: 6,
+      borderRadius: 2,
+    },
+    filled: {
+      backgroundColor: selectedColor,
+    },
+    outline: {
+      borderColor: selectedColor,
+      borderWidth: 1,
+    },
+    contentContainer: {
+      flexDirection: 'row',
+    },
+    text: {
+      color: variant === 'filled' ? 'white' : selectedColor,
+      fontSize: 16,
+      textAlign: 'center',
+      paddingHorizontal: 6,
     },
   });
 
   return (
     <Pressable
-      style={styles.mainContainer}
+      style={{
+        ...styles.defaultStyle,
+        ...(variant === 'plain'
+          ? {}
+          : variant === 'filled'
+          ? styles.filled
+          : styles.outline),
+        ...style,
+        ...styles.mainContainer,
+      }}
       onPress={onPress}>
-      <Icon
-        name="delete"
-        color="white"
-      />
+      <View style={styles.contentContainer}>
+        <Icon
+          name={icon}
+          color={variant === 'filled' ? 'white' : selectedColor}
+          size={24}
+        />
+        {text && <Text style={styles.text}>{text}</Text>}
+      </View>
     </Pressable>
   );
 };

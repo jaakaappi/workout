@@ -60,6 +60,7 @@ export const WorkoutsScreen = ({
         <FlatList
           data={workouts}
           style={{width: '100%'}}
+          ItemSeparatorComponent={() => <View style={{height: 6}} />}
           renderItem={({item, index}) => (
             <Pressable
               onPress={() =>
@@ -78,8 +79,9 @@ export const WorkoutsScreen = ({
                   </Text>
                 </View>
                 <View style={styles.workoutRowButtonContainer}>
-                  <Button
-                    title="Edit"
+                  <IconButton
+                    icon="square-edit-outline"
+                    variant="plain"
                     onPress={() =>
                       navigation.navigate('EditWorkout', {workout: item})
                     }

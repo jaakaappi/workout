@@ -1,8 +1,9 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {
   Alert,
   Button,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -15,6 +16,7 @@ import {RootStackParamList} from './App';
 import {Workout} from './types';
 import {Context} from './WorkoutStore';
 import {IconButton} from './IconButton';
+import {WorkoutMoveList} from './WorkoutMoveList';
 
 export const EditWorkoutScreen = ({
   route,
@@ -240,7 +242,9 @@ export const EditWorkoutScreen = ({
   });
 
   return (
-    <View style={styles.mainContainer}>
+    <ScrollView
+      style={styles.mainContainer}
+      automaticallyAdjustKeyboardInsets>
       <Text style={styles.textFieldHeader}>Name (required)</Text>
       <TextInput
         style={styles.textField}
@@ -257,88 +261,13 @@ export const EditWorkoutScreen = ({
         onChangeText={text => handleWorkoutNotesChanged(text)}
       />
       <Text style={styles.textFieldHeader}>Moves</Text>
-      {currentWorkout.moves.length > 0 && (
-        <View>
-          <Text>
-            Series x reps, move name, weight{' '}
-            <Text style={{fontWeight: 'bold'}}>(all required)</Text>
-          </Text>
-          <FlatList
-            data={currentWorkout.moves}
-            style={{display: 'flex'}}
-            renderItem={({item: move, index: moveIndex}) => (
-              <View style={{flexDirection: 'row', padding: 6, gap: 6}}>
-                <TextInput
-                  style={styles.textField}
-                  keyboardType="number-pad"
-                  clearTextOnFocus
-                  autoFocus
-                  maxLength={2}
-                  value={move.series.toString()}
-                  onChangeText={text =>
-                    handleMoveSeriesChanged(text, moveIndex)
-                  }
-                />
-                <Text
-                  style={{
-                    flexShrink: 1,
-                    height: '100%',
-                    textAlign: 'center',
-                    verticalAlign: 'middle',
-                    padding: 0,
-                  }}>
-                  x
-                </Text>
-                <TextInput
-                  style={styles.textField}
-                  keyboardType="number-pad"
-                  clearTextOnFocus
-                  maxLength={2}
-                  value={move.repetitions.toString()}
-                  onChangeText={text =>
-                    handleMoveRepetitionsChanged(text, moveIndex)
-                  }
-                />
-                <TextInput
-                  style={{...styles.textField, flexShrink: 0, flexGrow: 1}}
-                  clearButtonMode="while-editing"
-                  clearTextOnFocus
-                  allowFontScaling
-                  placeholder="Name"
-                  value={move.move.name}
-                  onChangeText={text => handleMoveNameChanged(text, moveIndex)}
-                />
-                <TextInput
-                  style={styles.textField}
-                  keyboardType="number-pad"
-                  clearTextOnFocus
-                  maxLength={3}
-                  placeholder="Weight"
-                  value={move.weight.toString()}
-                  onChangeText={text =>
-                    handleMoveWeightChanged(text, moveIndex)
-                  }
-                />
-                <Text
-                  style={{
-                    flexShrink: 1,
-                    height: '100%',
-                    textAlign: 'center',
-                    verticalAlign: 'middle',
-                    padding: 0,
-                  }}>
-                  kg
-                </Text>
-                <IconButton
-                  color="#DD0000"
-                  onPress={() => handleRemoveMovePressed(moveIndex)}
-                />
-              </View>
-            )}
-            keyExtractor={(_, index) => index.toString()}
-          />
-        </View>
-      )}
+      <View>
+        <Text>
+          Series x reps, move name, weight{' '}
+          <Text style={{fontWeight: 'bold'}}>(all required)</Text>
+        </Text>
+      </View>
+      <WorkoutMoveList currentWorkout={currentWorkout} />
       <Button
         title="Add move"
         onPress={handleAddMovePressed}
@@ -355,6 +284,6 @@ export const EditWorkoutScreen = ({
           onPress={() => handleDeleteWorkoutPressed(currentWorkout)}
         />
       )}
-    </View>
+    </ScrollView>
   );
 };
