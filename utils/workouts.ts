@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Workout} from './types';
+import {Workout} from '../types';
 
 export const getWorkouts = async (): Promise<Workout[]> => {
   try {

@@ -92,12 +92,22 @@ export const WorkoutDetailsScreen = ({
                   </View>
                   <View style={styles.weightCell}>
                     <View style={styles.iconContainer}>
-                      <Icon
-                        style={styles.blackText}
-                        name="barbell-outline"
-                      />
+                      {move.move.unit === 'kg' ? (
+                        <Icon
+                          style={styles.blackText}
+                          name="barbell-outline"
+                        />
+                      ) : (
+                        <Icon
+                          style={styles.blackText}
+                          name="timer-outline"
+                        />
+                      )}
                     </View>
-                    <Text style={styles.blackText}>{`${move.weight}kg`}</Text>
+                    <Text
+                      style={
+                        styles.blackText
+                      }>{`${move.amount}${move.move.unit}`}</Text>
                   </View>
                 </View>
               </View>

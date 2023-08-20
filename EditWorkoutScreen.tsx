@@ -13,8 +13,8 @@ import uuid from 'react-native-uuid';
 
 import {RootStackParamList} from './App';
 import {Workout, WorkoutMove} from './types';
-import {Context} from './WorkoutStore';
-import {WorkoutMoveList} from './WorkoutMoveList';
+import {Context} from './WorkoutStoreContext';
+import {EditWorkoutMoveList} from './EditWorkoutMoveList';
 
 export const EditWorkoutScreen = ({
   route,
@@ -49,16 +49,14 @@ export const EditWorkoutScreen = ({
   const {dispatch} = useContext(Context);
 
   const handleAddMovePressed = () => {
-    const newMoves = [
-      ...currentWorkout.moves,
-      {
-        move: {name: '', maximumWeight: ''},
-        repetitions: '',
-        series: '',
-        notes: '',
-        weight: '',
-      },
-    ];
+    const newMove: WorkoutMove = {
+      move: {name: '', maximumAmount: '', unit: 'kg'},
+      repetitions: '',
+      series: '',
+      notes: '',
+      amount: '',
+    };
+    const newMoves = [...currentWorkout.moves, newMove];
     setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
@@ -79,7 +77,7 @@ export const EditWorkoutScreen = ({
       currentWorkout.name.length <= 0 ||
       currentWorkout.moves.some(
         move =>
-          move.series === '' || move.repetitions === '' || move.weight === '',
+          move.series === '' || move.repetitions === '' || move.amount === '',
       )
     ) {
       Alert.alert(
@@ -126,9 +124,12 @@ export const EditWorkoutScreen = ({
   };
 
   const styles = StyleSheet.create({
-    mainContainer: {
+    scrollView: {
       padding: 8,
-      gap: 6,
+    },
+    mainContainer: {
+      flex: 1,
+      rowGap: 6,
     },
     textFieldHeader: {
       color: 'black',
@@ -146,7 +147,8 @@ export const EditWorkoutScreen = ({
 
   return (
     <ScrollView
-      style={styles.mainContainer}
+      style={styles.scrollView}
+      contentContainerStyle={styles.mainContainer}
       automaticallyAdjustKeyboardInsets>
       <Text style={styles.textFieldHeader}>Name (required)</Text>
       <TextInput
@@ -170,7 +172,7 @@ export const EditWorkoutScreen = ({
           <Text style={{fontWeight: 'bold'}}>(all required)</Text>
         </Text>
       </View>
-      <WorkoutMoveList
+      <EditWorkoutMoveList
         moves={currentWorkout.moves}
         updateWorkoutMoves={handleMovesUpdated}
       />

@@ -6,6 +6,7 @@ interface IconButtonProps {
   onPress: () => void;
   color?: string;
   variant?: 'filled' | 'outline' | 'plain';
+  iconSide?: 'left' | 'right';
   icon: string;
   style?: ViewStyle;
   text?: string;
@@ -15,6 +16,7 @@ export const IconButton = ({
   onPress,
   color,
   variant = 'filled',
+  iconSide = 'left',
   icon,
   style,
   text,
@@ -26,11 +28,13 @@ export const IconButton = ({
       verticalAlign: 'middle',
       flexDirection: 'column',
       justifyContent: 'center',
+      alignItems: 'center',
     },
     defaultStyle: {
-      padding: 4,
+      paddingVertical: 3,
       paddingHorizontal: 6,
       borderRadius: 2,
+      maxHeight: 30,
     },
     filled: {
       backgroundColor: selectedColor,
@@ -41,14 +45,23 @@ export const IconButton = ({
     },
     contentContainer: {
       flexDirection: 'row',
+      justifyContent: 'space-between',
     },
     text: {
       color: variant === 'filled' ? 'white' : selectedColor,
       fontSize: 16,
       textAlign: 'center',
-      paddingHorizontal: 6,
     },
   });
+
+  const renderIcon = () => (
+    <Icon
+      name={icon}
+      style={{width: 20, textAlign: 'center'}}
+      color={variant === 'filled' ? 'white' : selectedColor}
+      size={24}
+    />
+  );
 
   return (
     <Pressable
@@ -64,12 +77,9 @@ export const IconButton = ({
       }}
       onPress={onPress}>
       <View style={styles.contentContainer}>
-        <Icon
-          name={icon}
-          color={variant === 'filled' ? 'white' : selectedColor}
-          size={24}
-        />
+        {iconSide === 'left' && renderIcon()}
         {text && <Text style={styles.text}>{text}</Text>}
+        {iconSide === 'right' && renderIcon()}
       </View>
     </Pressable>
   );

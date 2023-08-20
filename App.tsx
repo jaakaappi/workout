@@ -10,10 +10,10 @@ import {
 import {WorkoutsScreen} from './WorkoutsScreen';
 import {EditWorkoutScreen} from './EditWorkoutScreen';
 import {Workout} from './types';
-import {WorkoutStore} from './WorkoutStore';
+import {WorkoutStoreContext} from './WorkoutStoreContext';
 import {WorkoutDetailsScreen} from './WorkoutDetailScreen';
 import {SettingsScreen} from './SettingsScreen';
-import {IconButton} from './IconButton';
+import {IconButton} from './components/IconButton';
 
 export type RootStackParamList = {
   Workouts: undefined;
@@ -28,12 +28,12 @@ const WorkoutScreen = (): JSX.Element => {
 
   return (
     <NavigationContainer>
-      <WorkoutStore>
+      <WorkoutStoreContext>
         <GestureHandlerRootView style={{flex: 1}}>
           <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
           <WorkoutStack />
         </GestureHandlerRootView>
-      </WorkoutStore>
+      </WorkoutStoreContext>
     </NavigationContainer>
   );
 };

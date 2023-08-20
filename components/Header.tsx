@@ -1,4 +1,4 @@
-import {Text} from '@rneui/base';
+import {Text} from 'react-native';
 import React, {ReactNode} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {IconButton} from './IconButton';

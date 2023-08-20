@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
-import {Context} from './WorkoutStore';
-import {IconButton} from './IconButton';
+import {Context} from './WorkoutStoreContext';
+import {IconButton} from './components/IconButton';
 
 export const WorkoutsScreen = ({
   navigation,

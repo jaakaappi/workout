@@ -4,7 +4,7 @@ import {Alert, Button, StyleSheet, View} from 'react-native';
 import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 
-import {Context} from './WorkoutStore';
+import {Context} from './WorkoutStoreContext';
 import {Workout} from './types';
 
 export const SettingsScreen = () => {

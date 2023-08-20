@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {createContext, useReducer} from 'react';
 import {Workout, WorkoutState} from './types';
-import {getWorkouts, saveWorkouts} from './workouts';
+import {getWorkouts, saveWorkouts} from './utils/workouts';
 
 type WorkoutContext = {
   state: WorkoutState;
@@ -18,7 +18,7 @@ const initialState: WorkoutContext = {
 
 export const Context = createContext(initialState);
 
-export const WorkoutStore = ({children}: React.PropsWithChildren) => {
+export const WorkoutStoreContext = ({children}: React.PropsWithChildren) => {
   const workoutReducer = (
     state: WorkoutState,
     action: {type: string; payload: Workout[] | number | string},
