@@ -1,4 +1,4 @@
-import React, {useContext, useMemo} from 'react';
+import React, {useContext} from 'react';
 import {Alert, Button, StyleSheet, View} from 'react-native';
 
 import RNFS from 'react-native-fs';

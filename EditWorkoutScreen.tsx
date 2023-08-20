@@ -1,8 +1,7 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Alert,
   Button,
-  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,9 +12,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import uuid from 'react-native-uuid';
 
 import {RootStackParamList} from './App';
-import {Workout} from './types';
+import {Workout, WorkoutMove} from './types';
 import {Context} from './WorkoutStore';
-import {IconButton} from './IconButton';
 import {WorkoutMoveList} from './WorkoutMoveList';
 
 export const EditWorkoutScreen = ({
@@ -64,80 +62,7 @@ export const EditWorkoutScreen = ({
     setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
-  const handleMoveSeriesChanged = (newValue: string, moveIndex: number) => {
-    const cleanedValue = newValue
-      .replace(/[^0-9]/g, '')
-      .split(',')[0]
-      .split('.')[0];
-
-    const oldMove = currentWorkout.moves[moveIndex];
-    const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
-      {
-        ...oldMove,
-        series:
-          cleanedValue != ''
-            ? Math.floor(parseFloat(cleanedValue)).toString()
-            : '',
-      },
-      ...currentWorkout.moves.slice(moveIndex + 1),
-    ];
-    setCurrentWorkout({...currentWorkout, moves: newMoves});
-  };
-
-  const handleMoveRepetitionsChanged = (
-    newValue: string,
-    moveIndex: number,
-  ) => {
-    const cleanedValue = newValue
-      .replace(/[^0-9]/g, '')
-      .split(',')[0]
-      .split('.')[0];
-
-    const oldMove = currentWorkout.moves[moveIndex];
-    const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
-      {
-        ...oldMove,
-        repetitions:
-          cleanedValue != ''
-            ? Math.floor(parseFloat(cleanedValue)).toString()
-            : '',
-      },
-      ...currentWorkout.moves.slice(moveIndex + 1),
-    ];
-    setCurrentWorkout({...currentWorkout, moves: newMoves});
-  };
-
-  const handleMoveNameChanged = (newValue: string, moveIndex: number) => {
-    const oldMove = currentWorkout.moves[moveIndex];
-    const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
-      {...oldMove, move: {...oldMove.move, name: newValue}},
-      ...currentWorkout.moves.slice(moveIndex + 1),
-    ];
-    setCurrentWorkout({...currentWorkout, moves: newMoves});
-  };
-
-  const handleMoveWeightChanged = (newValue: string, moveIndex: number) => {
-    const cleanedValue = newValue
-      .replace(/[^0-9]/g, '')
-      .split(',')[0]
-      .split('.')[0];
-
-    const oldMove = currentWorkout.moves[moveIndex];
-    const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
-      {
-        ...oldMove,
-        weight:
-          cleanedValue != ''
-            ? Math.floor(parseFloat(cleanedValue)).toString()
-            : '',
-      },
-      ...currentWorkout.moves.slice(moveIndex + 1),
-    ];
-
+  const handleMovesUpdated = (newMoves: WorkoutMove[]) => {
     setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
@@ -147,21 +72,6 @@ export const EditWorkoutScreen = ({
 
   const handleWorkoutNotesChanged = (notes: string) => {
     setCurrentWorkout({...currentWorkout, notes: notes});
-  };
-
-  const handleUnsavedChangesOnNavigation = () => {
-    Alert.alert('Alert Title', 'My Alert Msg', [
-      {
-        text: 'Ask me later',
-        onPress: () => console.log('Ask me later pressed'),
-      },
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: () => console.log('OK Pressed')},
-    ]);
   };
 
   const handleSavePressed = () => {
@@ -183,22 +93,15 @@ export const EditWorkoutScreen = ({
           type: 'addWorkout',
           payload: [currentWorkout],
         });
+        navigation.navigate('WorkoutDetails', {workout: currentWorkout});
       } else {
         dispatch({
           type: 'addWorkout',
           payload: [{...currentWorkout, id: uuid.v4().toString()}],
         });
+        navigation.navigate('Workouts');
       }
-      navigation.navigate('Workouts');
     }
-  };
-
-  const handleRemoveMovePressed = (moveIndex: number) => {
-    const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
-      ...currentWorkout.moves.slice(moveIndex + 1),
-    ];
-    setCurrentWorkout({...currentWorkout, moves: newMoves});
   };
 
   const handleDeleteWorkoutPressed = (workout: Workout) => {
@@ -248,14 +151,14 @@ export const EditWorkoutScreen = ({
       <Text style={styles.textFieldHeader}>Name (required)</Text>
       <TextInput
         style={styles.textField}
-        value={currentWorkout.name}
+        defaultValue={currentWorkout.name}
         placeholder="Name"
         onChangeText={text => handleWorkoutNameChanged(text)}
       />
       <Text style={styles.textFieldHeader}>Notes</Text>
       <TextInput
         style={styles.textField}
-        value={currentWorkout.notes}
+        defaultValue={currentWorkout.notes}
         multiline
         placeholder="Notes"
         onChangeText={text => handleWorkoutNotesChanged(text)}
@@ -267,7 +170,10 @@ export const EditWorkoutScreen = ({
           <Text style={{fontWeight: 'bold'}}>(all required)</Text>
         </Text>
       </View>
-      <WorkoutMoveList currentWorkout={currentWorkout} />
+      <WorkoutMoveList
+        moves={currentWorkout.moves}
+        updateWorkoutMoves={handleMovesUpdated}
+      />
       <Button
         title="Add move"
         onPress={handleAddMovePressed}

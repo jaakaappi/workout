@@ -1,27 +1,26 @@
 import {StyleSheet, Text, TextInput, View} from 'react-native';
-import {Workout} from './types';
-import React, {useContext, useState} from 'react';
-import uuid from 'react-native-uuid';
+import {WorkoutMove} from './types';
+import React, {useState} from 'react';
 import {IconButton} from './IconButton';
-import {Context} from './WorkoutStore';
 
 interface WorkoutMoveListProps {
-  currentWorkout: Workout;
+  moves: WorkoutMove[];
+  updateWorkoutMoves: (newMoves: WorkoutMove[]) => void;
 }
 
 export const WorkoutMoveList = ({
-  currentWorkout: parentWorkout,
+  moves,
+  updateWorkoutMoves,
 }: WorkoutMoveListProps) => {
-  const [currentWorkout, setCurrentWorkout] = useState<Workout>(parentWorkout);
   const handleMoveSeriesChanged = (newValue: string, moveIndex: number) => {
     const cleanedValue = newValue
       .replace(/[^0-9]/g, '')
       .split(',')[0]
       .split('.')[0];
 
-    const oldMove = currentWorkout.moves[moveIndex];
+    const oldMove = moves[moveIndex];
     const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
+      ...moves.slice(0, moveIndex),
       {
         ...oldMove,
         series:
@@ -29,9 +28,9 @@ export const WorkoutMoveList = ({
             ? Math.floor(parseFloat(cleanedValue)).toString()
             : '',
       },
-      ...currentWorkout.moves.slice(moveIndex + 1),
+      ...moves.slice(moveIndex + 1),
     ];
-    // setCurrentWorkout({...currentWorkout, moves: newMoves});
+    updateWorkoutMoves(newMoves);
   };
 
   const handleMoveRepetitionsChanged = (
@@ -43,9 +42,9 @@ export const WorkoutMoveList = ({
       .split(',')[0]
       .split('.')[0];
 
-    const oldMove = currentWorkout.moves[moveIndex];
+    const oldMove = moves[moveIndex];
     const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
+      ...moves.slice(0, moveIndex),
       {
         ...oldMove,
         repetitions:
@@ -53,19 +52,20 @@ export const WorkoutMoveList = ({
             ? Math.floor(parseFloat(cleanedValue)).toString()
             : '',
       },
-      ...currentWorkout.moves.slice(moveIndex + 1),
+      ...moves.slice(moveIndex + 1),
     ];
-    // setCurrentWorkout({...currentWorkout, moves: newMoves});
+    updateWorkoutMoves(newMoves);
   };
 
   const handleMoveNameChanged = (newValue: string, moveIndex: number) => {
-    const oldMove = currentWorkout.moves[moveIndex];
+    const oldMove = moves[moveIndex];
     const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
+      ...moves.slice(0, moveIndex),
       {...oldMove, move: {...oldMove.move, name: newValue}},
-      ...currentWorkout.moves.slice(moveIndex + 1),
+      ...moves.slice(moveIndex + 1),
     ];
-    setCurrentWorkout({...currentWorkout, moves: newMoves});
+
+    updateWorkoutMoves(newMoves);
   };
 
   const handleMoveWeightChanged = (newValue: string, moveIndex: number) => {
@@ -74,9 +74,9 @@ export const WorkoutMoveList = ({
       .split(',')[0]
       .split('.')[0];
 
-    const oldMove = currentWorkout.moves[moveIndex];
+    const oldMove = moves[moveIndex];
     const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
+      ...moves.slice(0, moveIndex),
       {
         ...oldMove,
         weight:
@@ -84,18 +84,18 @@ export const WorkoutMoveList = ({
             ? Math.floor(parseFloat(cleanedValue)).toString()
             : '',
       },
-      ...currentWorkout.moves.slice(moveIndex + 1),
+      ...moves.slice(moveIndex + 1),
     ];
 
-    // setCurrentWorkout({...currentWorkout, moves: newMoves});
+    updateWorkoutMoves(newMoves);
   };
 
   const handleRemoveMovePressed = (moveIndex: number) => {
     const newMoves = [
-      ...currentWorkout.moves.slice(0, moveIndex),
-      ...currentWorkout.moves.slice(moveIndex + 1),
+      ...moves.slice(0, moveIndex),
+      ...moves.slice(moveIndex + 1),
     ];
-    // setCurrentWorkout({...currentWorkout, moves: newMoves});
+    updateWorkoutMoves(newMoves);
   };
 
   const styles = StyleSheet.create({
@@ -117,16 +117,18 @@ export const WorkoutMoveList = ({
     },
   });
 
-  return currentWorkout.moves.map((move, moveIndex) => (
+  const [tempValue, setTempValue] = useState('');
+
+  return moves.map((move, moveIndex) => (
     <View
-      key={uuid.v4().toString()}
+      key={moveIndex}
       style={{flexDirection: 'row', padding: 6, gap: 6}}>
       <TextInput
         style={styles.textField}
         keyboardType="number-pad"
         clearTextOnFocus
         maxLength={2}
-        value={move.series.toString()}
+        defaultValue={move.series.toString()}
         onChangeText={text => handleMoveSeriesChanged(text, moveIndex)}
       />
       <Text
@@ -144,16 +146,13 @@ export const WorkoutMoveList = ({
         keyboardType="number-pad"
         clearTextOnFocus
         maxLength={2}
-        value={move.repetitions.toString()}
+        defaultValue={move.repetitions.toString()}
         onChangeText={text => handleMoveRepetitionsChanged(text, moveIndex)}
       />
       <TextInput
         style={{...styles.textField, flexShrink: 0, flexGrow: 1}}
-        clearButtonMode="while-editing"
-        clearTextOnFocus
-        allowFontScaling
         placeholder="Name"
-        value={move.move.name}
+        defaultValue={move.move.name}
         onChangeText={text => handleMoveNameChanged(text, moveIndex)}
       />
       <TextInput
@@ -162,7 +161,7 @@ export const WorkoutMoveList = ({
         clearTextOnFocus
         maxLength={3}
         placeholder="Weight"
-        value={move.weight.toString()}
+        defaultValue={move.weight.toString()}
         onChangeText={text => handleMoveWeightChanged(text, moveIndex)}
       />
       <Text

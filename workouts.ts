@@ -7,7 +7,9 @@ export const getWorkouts = async (): Promise<Workout[]> => {
     console.log(JSON.stringify(value));
     if (value !== null) {
       return JSON.parse(value) as Workout[];
-    } else return [];
+    } else {
+      return [];
+    }
   } catch (error) {
     console.error('Failed to read workouts', error);
     return [];

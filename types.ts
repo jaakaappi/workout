@@ -1,5 +1,3 @@
-import {UUID} from 'crypto';
-
 export interface Workout {
   id: string;
   name: string;

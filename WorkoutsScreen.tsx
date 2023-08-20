@@ -52,7 +52,7 @@ export const WorkoutsScreen = ({
 
   return (
     <View style={{height: '100%'}}>
-      {workouts.length == 0 ? (
+      {workouts.length === 0 ? (
         <View style={{flex: 1, padding: 8, alignItems: 'center'}}>
           <Text>No saved workouts</Text>
         </View>

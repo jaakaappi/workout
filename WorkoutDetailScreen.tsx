@@ -1,14 +1,12 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './App';
-import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import React from 'react';
 import {Workout} from './types';
-import {Context} from './WorkoutStore';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export const WorkoutDetailsScreen = ({
   route,
-  navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
   const {workout} = route.params as {workout: Workout};
 
@@ -109,7 +107,7 @@ export const WorkoutDetailsScreen = ({
       ) : (
         <Text>No moves</Text>
       )}
-      <View style={styles.deleteButton}></View>
+      <View style={styles.deleteButton} />
     </View>
   );
 };
