@@ -45,7 +45,8 @@ const WorkoutStack = () => {
         name="Workouts"
         component={WorkoutsScreen}
         options={props => ({
-          headerTitle: () => <WorkoutScreenHeader {...props} />,
+          headerTitle: () => <WorkoutScreenHeaderText {...props} />,
+          headerRight: () => <WorkoutScreenHeaderButtons {...props} />,
         })}
       />
       <Stack.Screen
@@ -57,7 +58,9 @@ const WorkoutStack = () => {
         name="WorkoutDetails"
         component={WorkoutDetailsScreen}
         options={props => ({
-          headerTitle: () => <WorkoutDetailsHeader {...props} />,
+          headerTitleAlign: 'center',
+          headerTitle: () => <WorkoutDetailsHeaderTitle {...props} />,
+          headerRight: () => <WorkoutDetailsHeaderRightButtons {...props} />,
         })}
       />
       <Stack.Screen
@@ -68,7 +71,7 @@ const WorkoutStack = () => {
   );
 };
 
-const WorkoutScreenHeader = ({
+const WorkoutScreenHeaderText = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
   const styles = StyleSheet.create({
@@ -100,7 +103,52 @@ const WorkoutScreenHeader = ({
   );
 };
 
-const WorkoutDetailsHeader = ({
+const WorkoutScreenHeaderButtons = ({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList>) => {
+  return (
+    <View>
+      <IconButton
+        icon="plus"
+        color="green"
+        text="New"
+        onPress={() => navigation.navigate('EditWorkout', {workout: undefined})}
+      />
+    </View>
+  );
+};
+
+const WorkoutDetailsHeaderTitle = ({
+  route,
+}: NativeStackScreenProps<RootStackParamList>) => {
+  const {workout} = route.params! as {workout: Workout};
+
+  const styles = StyleSheet.create({
+    headerText: {
+      color: 'black',
+      fontSize: 20,
+    },
+    textContainer: {
+      flexWrap: 'nowrap',
+      flexDirection: 'row',
+      flexGrow: 0,
+      flexShrink: 1,
+    },
+  });
+
+  return (
+    <View style={styles.textContainer}>
+      <Text
+        style={styles.headerText}
+        ellipsizeMode="tail"
+        numberOfLines={1}>
+        {workout.name}
+      </Text>
+    </View>
+  );
+};
+
+const WorkoutDetailsHeaderRightButtons = ({
   route,
   navigation,
 }: NativeStackScreenProps<RootStackParamList>) => {
@@ -111,28 +159,8 @@ const WorkoutDetailsHeader = ({
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      margin: 0,
-      padding: 0,
       gap: 8,
-      width: '90%',
-    },
-    headerText: {
-      color: 'black',
-      fontSize: 20,
-      textAlign: 'left',
-    },
-    textContainer: {
-      maxWidth: '70%',
-      flexWrap: 'nowrap',
-      flexDirection: 'row',
-      flexGrow: 0,
-      flexShrink: 1,
-    },
-    buttonContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      gap: 6,
-      justifyContent: 'center',
+      flexShrink: 0,
     },
     buttonStyle: {
       padding: 0,
@@ -142,28 +170,18 @@ const WorkoutDetailsHeader = ({
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.textContainer}>
-        <Text
-          style={styles.headerText}
-          ellipsizeMode="tail"
-          numberOfLines={1}>
-          {workout.name}
-        </Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <IconButton
-          icon="square-edit-outline"
-          variant="plain"
-          style={styles.buttonStyle}
-          onPress={() => navigation.navigate('EditWorkout', {workout: workout})}
-        />
-        <IconButton
-          text="Start"
-          color="green"
-          icon="play-outline"
-          onPress={() => {}}
-        />
-      </View>
+      <IconButton
+        icon="square-edit-outline"
+        variant="plain"
+        style={styles.buttonStyle}
+        onPress={() => navigation.navigate('EditWorkout', {workout: workout})}
+      />
+      <IconButton
+        text="Start"
+        color="green"
+        icon="play-outline"
+        onPress={() => {}}
+      />
     </View>
   );
 };
